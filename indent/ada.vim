@@ -2,7 +2,7 @@
 " Language:	Ada
 " Maintainer:	Neil Bird <neil@fnxweb.com>
 " Last Change:	2002 May 21
-" Version:	$Id: ada.vim,v 1.22 2002/05/21 13:23:20 nabird Exp $
+" Version:	$Id: ada.vim,v 1.24 2002/08/05 12:39:41 nabird Exp $
 " Look for the latest version at http://vim.sourceforge.net/
 "
 " ToDo:
@@ -132,7 +132,7 @@ function s:StatementIndent( current_indent, prev_lnum )
       endwhile
       " Leave indent alone if our ';' line is part of a ';'-delineated
       " aggregate (e.g., procedure args.) or first line after a block start.
-      if line =~ s:AdaBlockStart && line =~ '(\s*$'
+      if line =~ s:AdaBlockStart || line =~ '(\s*$'
          return a:current_indent
       endif
       if line !~ '[.=(]\s*$'
@@ -202,12 +202,17 @@ function GetAdaIndent()
       let ind = s:StatementIndent( ind, lnum )
    endif
 
+   " Check for potential argument list on next line
+   let continuation = (line =~ '[A-Za-z0-9_]\s*$')
+
 
    " Check current line; search for simplistic matching start-of-block
    let line = getline(v:lnum)
    if line =~ '^\s*#'
       " Start of line for ada-pp
       let ind = 0
+   elseif continuation && line =~ '^\s*('
+      let ind = ind + &sw
    elseif line =~ '^\s*\(begin\|is\)\>'
       let ind = s:MainBlockIndent( ind, lnum, '\(procedure\|function\|declare\|package\|task\)\>', 'begin\>' )
    elseif line =~ '^\s*record\>'
