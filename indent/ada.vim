@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	Ada
 " Maintainer:	Neil Bird <neil@fnxweb.com>
-" Last Change:	2001 November 6
-" Version:	$Id: ada.vim,v 1.18 2001/11/06 16:39:05 nabird Exp $
+" Last Change:	2001 December 10
+" Version:	$Id: ada.vim,v 1.19 2001/12/10 11:34:24 nabird Exp $
 " Look for the latest version at http://vim.sourceforge.net/
 "
 " ToDo:
@@ -179,7 +179,7 @@ function GetAdaIndent()
       let ind = s:MainBlockIndent( ind, lnum, 'type\>', '' )
    elseif line =~ ')\s*[;,]\s*$'
       " Revert to indent of line that started this parenthesis pair
-      lnum
+      exe lnum
       exe 'normal! $F)%'
       if getline('.') =~ '^\s*('
          " Dire layout - use previous indent (could check for AdaComment here)
@@ -187,7 +187,7 @@ function GetAdaIndent()
       else
          let ind = indent('.')
       endif
-      v:lnum
+      exe v:lnum
    elseif line =~ '[.=(]\s*$'
       " A statement continuation - move in one
       let ind = ind + &sw
