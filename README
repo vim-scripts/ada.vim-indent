@@ -1,0 +1,7 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=137
+
+Sets indentexpr for Ada langauge; fairly comprehensive indent calculations, but don't expect 1G=G to work very well!  As it happens, it now seems to fare fairly well ...
+
+Let me know if you find a situation you'd like fixed.
+
+See also Ada ftplugin, vimscript #136.
