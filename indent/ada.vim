@@ -2,7 +2,7 @@
 " Language:	Ada
 " Maintainer:	Neil Bird <neil@fnxweb.com>
 " Last Change:	2003 May 20
-" Version:	$Id: ada.vim,v 1.26 2003/05/21 12:35:16 nabird Exp $
+" Version:	$Id: ada.vim,v 1.27 2004/02/24 12:54:14 nabird Exp $
 " Look for the latest version at http://vim.sourceforge.net/
 "
 " ToDo:
@@ -192,7 +192,7 @@ function GetAdaIndent()
       " Move indent back to tallying 'type' preceeding the 'record'.
       " Allow indent to be equal to 'end record's.
       let ind = s:MainBlockIndent( ind+&sw, lnum, 'type\>', '' )
-   elseif line =~ ')\s*[;,]\s*$'
+   elseif line =~ '\(^\s*new\>.*\)\@<!)\s*[;,]\s*$'
       " Revert to indent of line that started this parenthesis pair
       exe lnum
       exe 'normal! $F)%'
@@ -239,7 +239,7 @@ function GetAdaIndent()
       let ind = s:EndBlockIndent( ind, lnum, 'if\>', 'end\>\s*\<if\>' )
    elseif line =~ '^\s*end\>\s*\<loop\>'
       " End of loops
-      let ind = s:EndBlockIndent( ind, lnum, '\(while\|for\)\>.*\<loop\>', 'end\>\s*\<loop\>' )
+      let ind = s:EndBlockIndent( ind, lnum, '\(\(while\|for\)\>.*\)\?\<loop\>', 'end\>\s*\<loop\>' )
    elseif line =~ '^\s*end\>\s*\<record\>'
       " End of records
       let ind = s:EndBlockIndent( ind, lnum, '\(type\>.*\)\=\<record\>', 'end\>\s*\<record\>' )
