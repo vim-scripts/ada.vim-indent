@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	Ada
 " Maintainer:	Neil Bird <neil@fnxweb.com>
-" Last Change:	2002 April 4
-" Version:	$Id: ada.vim,v 1.20 2002/04/04 10:49:50 nabird Exp $
+" Last Change:	2002 May 21
+" Version:	$Id: ada.vim,v 1.22 2002/05/21 13:23:20 nabird Exp $
 " Look for the latest version at http://vim.sourceforge.net/
 "
 " ToDo:
@@ -132,7 +132,7 @@ function s:StatementIndent( current_indent, prev_lnum )
       endwhile
       " Leave indent alone if our ';' line is part of a ';'-delineated
       " aggregate (e.g., procedure args.) or first line after a block start.
-      if line =~ s:AdaBlockStart
+      if line =~ s:AdaBlockStart && line =~ '(\s*$'
          return a:current_indent
       endif
       if line !~ '[.=(]\s*$'
@@ -152,6 +152,7 @@ function GetAdaIndent()
    " Find a non-blank line above the current line.
    let lnum = prevnonblank(v:lnum - 1)
    let ind = indent(lnum)
+   let package_line = 0
 
    " Get previous non-blank/non-comment-only/non-cpp line
    while 1
@@ -170,8 +171,11 @@ function GetAdaIndent()
 
    " Now check what's on the previous line
    if line =~ s:AdaBlockStart  ||  line =~ '(\s*$'
-      " Move indent in
-      let ind = ind + &sw
+      " Check for false matches to AdaBlockStart
+      if line !~ '^\s*package\>.*\<is\s*new\>'
+         " Move indent in
+         let ind = ind + &sw
+      endif
    elseif line =~ '^\s*\(case\|exception\)\>'
       " Move indent in twice (next 'when' will move back)
       let ind = ind + 2 * &sw
