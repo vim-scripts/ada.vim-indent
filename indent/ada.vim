@@ -1,13 +1,14 @@
 " Vim indent file
 " Language:	Ada
 " Maintainer:	Neil Bird <neil@fnxweb.com>
-" Last Change:	2002 May 21
-" Version:	$Id: ada.vim,v 1.24 2002/08/05 12:39:41 nabird Exp $
+" Last Change:	2003 April 8
+" Version:	$Id: ada.vim,v 1.25 2003/04/08 13:36:57 nabird Exp $
 " Look for the latest version at http://vim.sourceforge.net/
 "
 " ToDo:
 "  Verify handling of multi-line exprs. and recovery upon the final ';'.
 "  Correctly find comments given '"' and "" ==> " syntax.
+"  Combine the two large block-indent functions into one?
 
 " Only load this indent file when no other was loaded.
 if exists("b:did_indent")
@@ -42,7 +43,7 @@ function s:MainBlockIndent( prev_indent, prev_lnum, blockstart, stop_at )
    let lnum = a:prev_lnum
    let line = substitute( getline(lnum), s:AdaComment, '', '' )
    while lnum > 1
-      if a:stop_at != ''  &&  line =~ '^\s*' . a:stop_at
+      if a:stop_at != ''  &&  line =~ '^\s*' . a:stop_at  &&  indent(lnum) < a:prev_indent
          return -1
       elseif line =~ '^\s*' . a:blockstart
          let ind = indent(lnum)
@@ -197,6 +198,9 @@ function GetAdaIndent()
    elseif line =~ '[.=(]\s*$'
       " A statement continuation - move in one
       let ind = ind + &sw
+   elseif line =~ '^\s*new\>'
+      " Multiple line generic instantiation ('package blah is\nnew thingy')
+      let ind = s:StatementIndent( ind - &sw, lnum )
    elseif line =~ ';\s*$'
       " Statement end - try to find current statement-start indent
       let ind = s:StatementIndent( ind, lnum )
@@ -239,7 +243,7 @@ function GetAdaIndent()
       let ind = s:EndBlockIndent( ind, lnum, 'case\>.*\<is\>', 'end\>\s*\<case\>' )
    elseif line =~ '^\s*end\>'
       " General case for end
-      let ind = s:MainBlockIndent( ind, lnum, '\(if\|while\|for\|loop\|accept\|begin\|record\|case\)\>', '' )
+      let ind = s:MainBlockIndent( ind, lnum, '\(if\|while\|for\|loop\|accept\|begin\|record\|case\|exception\)\>', '' )
    elseif line =~ '^\s*exception\>'
       let ind = s:MainBlockIndent( ind, lnum, 'begin\>', '' )
    elseif line =~ '^\s*then\>'
